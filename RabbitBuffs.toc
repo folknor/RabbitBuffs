@@ -1,0 +1,6 @@
+## Interface: 30300
+## Author: rothar
+## Title: Rabbit Buffs
+## Notes: fucking simple buffs
+
+buffs.lua
