@@ -76,18 +76,18 @@ end
 
 DebuffButton_UpdateAnchors = function(buttonName, index)
 	local numBuffs = BUFF_ACTUAL_DISPLAY + BuffFrame.numEnchants - BuffFrame.numConsolidated
-	local rows = ceil(numBuffs/BUFFS_PER_ROW);
-	local buff = _G[buttonName..index];
-	local buffHeight = TempEnchant1:GetHeight();
+	local rows = ceil(numBuffs/BUFFS_PER_ROW)
+	local buff = _G[buttonName..index]
+	local buffHeight = TempEnchant1:GetHeight()
 
 	-- Position debuffs
 	if index > 1 and mod(index, BUFFS_PER_ROW) == 1 then
 		-- New row
-		buff:SetPoint("TOP", _G[buttonName..(index - BUFFS_PER_ROW)], "BOTTOM", 0, -BUFF_ROW_SPACING);
+		buff:SetPoint("TOP", _G[buttonName..(index - BUFFS_PER_ROW)], "BOTTOM", 0, -BUFF_ROW_SPACING)
 	elseif index == 1 then
-		buff:SetPoint("TOPRIGHT", TempEnchant1, "BOTTOMRIGHT", 0, -rows*(BUFF_ROW_SPACING+buffHeight));
+		buff:SetPoint("TOPRIGHT", TempEnchant1, "BOTTOMRIGHT", 0, -rows*(BUFF_ROW_SPACING+buffHeight))
 	else
-		buff:SetPoint("RIGHT", _G[buttonName..(index-1)], "LEFT", -5, 0);
+		buff:SetPoint("RIGHT", _G[buttonName..(index-1)], "LEFT", -5, 0)
 	end
 end
 
