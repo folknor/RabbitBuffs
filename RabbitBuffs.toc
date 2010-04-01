@@ -2,6 +2,6 @@
 ## Author: rothar
 ## Title: Rabbit Buffs
 ## Notes: fucking simple buffs
-## RequiredDependencies: RabbitTextures
 
 buffs.lua
+
