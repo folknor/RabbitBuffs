@@ -1,10 +1,5 @@
-_G.MINUTE_ONELETTER_ABBR = "|cffffffff%dm|r"
-_G.HOUR_ONELETTER_ABBR = "|cffffffff%dh|r"
-_G.DAY_ONELETTER_ABBR = "|cffffffff%dd|r"
-_G.SECOND_ONELETTER_ABBR = "|cffffffff%d|r"
-
-local glosstex1 = "Interface\\AddOns\\rActionButtonStyler\\media\\gloss"
-local glosstex2 = "Interface\\AddOns\\rActionButtonStyler\\media\\gloss_grey"
+local glosstex1 = "Interface\\AddOns\\RabbitTextures\\gloss"
+local glosstex2 = "Interface\\AddOns\\RabbitTextures\\gloss_grey"
 
 local function anchorToTempEnchants(self)
 	if not self:IsShown() then return end
@@ -30,17 +25,6 @@ for i = 1, 2 do
 	local icon = _G["TempEnchant"..i.."Icon"]
 	icon:SetTexCoord(0.03, 0.97, 0.03, 0.97)
 end
---[[
-do
-	local total = 0
-	BuffFrame:SetScript("OnUpdate", function(self, elapsed)
-		total = total + elapsed
-		if total > TOOLTIP_UPDATE_TIME then
-			total = 0
-			anchorToTempEnchants(BuffButton1)
-		end
-	end)
-end]]
 
 BuffFrame_UpdateAllBuffAnchors = function()
 	local previousBuff, aboveBuff
@@ -48,7 +32,6 @@ BuffFrame_UpdateAllBuffAnchors = function()
 
 	for i = 1, BUFF_ACTUAL_DISPLAY do
 		local buff = _G["BuffButton"..i]
-
 
 		if buff.consolidated then
 			if buff.parent == BuffFrame then
@@ -108,45 +91,19 @@ DebuffButton_UpdateAnchors = function(buttonName, index)
 	end
 end
 
-local addon = CreateFrame("Frame")
+local function checkgloss(name,icontype)
+	local f = _G[name]
+	if not f then return end
 
-addon:SetScript("OnEvent", function(self, event, unit)
-	if event=="PLAYER_ENTERING_WORLD" then
-		addon:runthroughicons()
-	elseif event == "UNIT_AURA" and unit == PlayerFrame.unit then
-		addon:runthroughicons()
-	end
-end)
-
-function addon:runthroughicons()
-	local i = 1
-	while _G["BuffButton"..i] do
-		addon:checkgloss("BuffButton"..i, 1)
-		i = i + 1
-	end
-	i = 1
-	while _G["DebuffButton"..i] do
-		addon:checkgloss("DebuffButton"..i, 2)
-		i = i + 1
-	end
-	i = 1
-	while _G["TempEnchant"..i] do
-		addon:checkgloss("TempEnchant"..i, 3)
-		i = i + 1
-	end
-end
-
-function addon:checkgloss(name,icontype)
 	local b = _G[name.."Border"]
 	local i = _G[name.."Icon"]
-	local f = _G[name]
 	local c = _G[name.."Gloss"]
 
 	if not c then
 		local fg = CreateFrame("Frame", name.."Gloss", f)
 		fg:SetAllPoints(f)
 
-		local t = f:CreateTexture(name.."GlossTexture","ARTWORK")
+		local t = f:CreateTexture(name.."GlossTexture", "ARTWORK")
 		t:SetTexture(glosstex1)
 		t:SetAllPoints(fg)
 
@@ -159,6 +116,15 @@ function addon:checkgloss(name,icontype)
 		back:SetPoint("BOTTOMRIGHT", i, 5, -5)
 		back:SetTexture("Interface\\AddOns\\RabbitTextures\\simplesquare_glow")
 		back:SetVertexColor(0, 0, 0, 1)
+
+		if icontype == 3 and b then
+			t:SetTexture(glosstex2)
+			t:SetVertexColor(0.5,0,0.5)
+		elseif icontype == 1 or not b then
+			t:SetTexture(glosstex1)
+			t:SetVertexColor(0.47,0.4,0.4)
+		end
+		
 	end
 
 	local tex = _G[name.."GlossTexture"]
@@ -167,17 +133,28 @@ function addon:checkgloss(name,icontype)
 		local red, green, blue = b:GetVertexColor()
 		tex:SetTexture(glosstex2)
 		tex:SetVertexColor(red*0.5, green*0.5, blue*0.5)
-	elseif icontype == 3 and b then
+	--[[elseif icontype == 3 and b then
 		tex:SetTexture(glosstex2)
 		tex:SetVertexColor(0.5,0,0.5)
 	else
 		tex:SetTexture(glosstex1)
-		tex:SetVertexColor(0.47,0.4,0.4)
+		tex:SetVertexColor(0.47,0.4,0.4)]]
 	end
 
-	if b then b:SetAlpha(0) end
+	if b then b:Hide() end
 end
 
-addon:RegisterEvent("UNIT_AURA")
+hooksecurefunc("AuraButton_Update", function(buttonName, index, filter)
+	local frame = buttonName .. index
+	checkgloss(frame, filter == "HELPFUL" and 1 or 2)
+end)
+
+local addon = CreateFrame("Frame")
+
+addon:SetScript("OnEvent", function(self, event, unit)
+	checkgloss("TempEnchant1", 3)
+	checkgloss("TempEnchant2", 3)
+end)
+
 addon:RegisterEvent("PLAYER_ENTERING_WORLD")
 
